@@ -1759,6 +1759,11 @@ GIMIStoreCommand::GIMIStoreCommand(wstring resource_name_in, wstring variable_na
 //here is where we really execute map resource to read it's content and unmap it later
 //这里我们执行Map来从GPU读取数据，用完之后UnMap来关闭读取
 void GIMIStoreCommand::run(CommandListState* state) {
+	LogOverlayW(LOG_WARNING, L"run store success!\n");
+
+	//TODO store command currently not working perfect, will fix it later
+	//under WuWa testing
+
 
 	//首先我们获取所有的ConstantsBuffer
 	ID3D11Buffer* buffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
@@ -1774,6 +1779,7 @@ void GIMIStoreCommand::run(CommandListState* state) {
 	else if (shaderType == 'C') {
 		state->mOrigContext1->CSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
 	}
+	LogOverlayW(LOG_WARNING, L"parse Store type success!\n");
 
 	UINT i;
 	for (i = 0; i < D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT ; i++) {
@@ -1833,17 +1839,18 @@ void GIMIStoreCommand::run(CommandListState* state) {
 		buffers[i]->Release();
 	}
 
+	LogOverlayW(LOG_INFO, L"parse Store value success!\n");
 
 	//these only for debug,don't uncomment it in release version
 	if (this->healthVal == -1) {
 		LogOverlay(LOG_WARNING, "[Store]Failed to run [Store] command." );
 	}
 	else {
-		//wstring tips = L"[Store] read health: " + std::to_wstring(this->healthVal);
-		//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
+		wstring tips = L"[Store] read value: " + std::to_wstring(this->healthVal);
+		LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
 	}
-	//wstring healthbar = std::to_wstring(this->healthVal);
-	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(healthbar.c_str()));
+	wstring healthbar = std::to_wstring(this->healthVal);
+	LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(healthbar.c_str()));
 
 
 	//更新CommandList中指向的变量的值
@@ -5736,10 +5743,11 @@ bool ParseCommandListGIMIStore(const wchar_t* section,
 	//识别Store命令
 	if (!wcscmp(key, L"store")) {
 
+	
 		//输出到屏幕看一下，这个输出的内容很多不要轻易打开
 		wstring valValue = *val;
-		wstring showInfo = L"Let's see what is inside *val:" + valValue + L" .\n";
-		//LogOverlayW(LOG_INFO, const_cast<wchar_t*>(showInfo.c_str()));
+		wstring showInfo = L"Let's see what is inside *val:  " + valValue + L" \n";
+		LogOverlayW(LOG_INFO, const_cast<wchar_t*>(showInfo.c_str()));
 
 
 		//用逗号分割开
@@ -5752,8 +5760,8 @@ bool ParseCommandListGIMIStore(const wchar_t* section,
 
 		// 分割后大小必须为3, 例如: $health,ps-cb0,33
 		if (tokens.size() != 3) {
-			//LogOverlayW(LOG_WARNING, L"Can't parse Store command, not exactly 3 member :\n");
-			//LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(showInfo.c_str()));
+			LogOverlayW(LOG_WARNING, L"Can't parse Store command, not exactly 3 member :\n");
+			LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(showInfo.c_str()));
 			return false;
 		}
 		
@@ -5778,6 +5786,7 @@ bool ParseCommandListGIMIStore(const wchar_t* section,
 			return false;
 		}
 
+		LogOverlayW(LOG_WARNING, L"parse Store command success!\n");
 		//创建一个新的GIMIStoreCommand
 		command = new GIMIStoreCommand(variableName, resourceName, resourceIndex);
 		command->var = var;
