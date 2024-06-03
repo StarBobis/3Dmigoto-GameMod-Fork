@@ -1,0 +1,52 @@
+// ---- Created with 3Dmigoto v1.3.14 on Sat Feb 23 16:40:02 2019
+Buffer<mixed4> t114 : register(t114);
+
+
+cbuffer cb0 : register(b0)
+{
+  float4 cb0[199] : packoffset(c0);
+}
+
+cbuffer ProjectionViewMatrix : register(b1)
+{
+  row_major float4x4 gProjectionViewMatrix : packoffset(c0);
+  row_major float4x4 gPreviousProjViewMatrix : packoffset(c4);
+  float4 gJittering : packoffset(c8);
+}
+
+
+
+// 3Dmigoto declarations
+#define cmp -
+
+
+void main(
+  float3 v0 : POSITION0,
+  float2 v1 : TEXCOORD0,
+  out float4 o0 : SV_Position0,
+  out float4 o1 : COLOR0,
+  out float2 o2 : TEXCOORD0)
+{
+  float4 r0,r1,r2;
+  uint4 bitmask, uiDest;
+  float4 fDest;
+
+  r0.xyzw = t114.Load(float4(0,0,0,0)).xyzw;
+  r1.xyz = v0.xyz;
+  r1.w = 1;
+  r0.x = dot(r0.xyzw, r1.xyzw);
+  r2.xyzw = t114.Load(float4(1,1,1,1)).xyzw;
+  r0.y = dot(r2.xyzw, r1.xyzw);
+  r2.xyzw = t114.Load(float4(2,2,2,2)).xyzw;
+  r0.z = dot(r2.xyzw, r1.xyzw);
+  r0.w = 1;
+  r1.x = dot(gProjectionViewMatrix._m00_m01_m02_m03, r0.xyzw);
+  r1.y = dot(gProjectionViewMatrix._m10_m11_m12_m13, r0.xyzw);
+  r1.z = dot(gProjectionViewMatrix._m30_m31_m32_m33, r0.xyzw);
+  o0.z = dot(gProjectionViewMatrix._m20_m21_m22_m23, r0.xyzw);
+  o0.xy = cb0[198].xy * r1.zz + r1.xy;
+  o0.w = r1.z;
+  o1.xyzw = float4(1,1,1,1);
+  o2.xy = v1.xy;
+  return;
+}

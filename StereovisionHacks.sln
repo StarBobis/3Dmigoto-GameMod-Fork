@@ -1,0 +1,151 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectX11", "DirectX11\DirectX11.vcxproj", "{92A679C7-A67F-4B16-B055-7A2F4C23DD80}"
+	ProjectSection(ProjectDependencies) = postProject
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86} = {374CBD29-E904-48E5-BF6F-A464B1EDCA86}
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED} = {59A9B0C6-8302-48A9-96E0-126FB32FB9ED}
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4} = {258D0AD2-B762-41E3-A0C1-CF831D859DA4}
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E} = {E0B52AE7-E160-4D32-BF3F-910B785E5A8E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NVAPI", "NVAPI\NVAPI.vcxproj", "{374CBD29-E904-48E5-BF6F-A464B1EDCA86}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E} = {E0B52AE7-E160-4D32-BF3F-910B785E5A8E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3DCompiler_46", "D3DCompiler_46\D3DCompiler_46.vcxproj", "{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BinaryDecompiler", "BinaryDecompiler\BinaryDecompiler.vcxproj", "{258D0AD2-B762-41E3-A0C1-CF831D859DA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1693604A-42AF-4848-B892-D1540FB17FDE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D_Shaders", "D3D_Shaders\D3D_Shaders.vcxproj", "{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nektra", "Nektra", "{0893CB33-AB1E-4391-A284-B7292160549C}"
+	ProjectSection(SolutionItems) = preProject
+		Nektra\NktHookLib.h = Nektra\NktHookLib.h
+		Nektra\NktHookLib.lib = Nektra\NktHookLib.lib
+		Nektra\nkthooklib.pdb = Nektra\nkthooklib.pdb
+		Nektra\NktHookLib64.lib = Nektra\NktHookLib64.lib
+		Nektra\nkthooklib64.pdb = Nektra\nkthooklib64.pdb
+		Nektra\NktHookLib64_Debug.lib = Nektra\NktHookLib64_Debug.lib
+		Nektra\nkthooklib64_debug.pdb = Nektra\nkthooklib64_debug.pdb
+		Nektra\NktHookLib_Debug.lib = Nektra\NktHookLib_Debug.lib
+		Nektra\nkthooklib_debug.pdb = Nektra\nkthooklib_debug.pdb
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build Tools", "Build Tools", "{09915712-7D63-41F9-8110-D5667F1F9FCF}"
+	ProjectSection(SolutionItems) = preProject
+		7zip\7za.exe = 7zip\7za.exe
+		CopyToGames.bat = CopyToGames.bat
+		Publish.bat = Publish.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{83DCC342-4199-4E03-B720-80E5EDF18500}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\d3dx.ini = Dependencies\d3dx.ini
+		Dependencies\uninstall.bat = Dependencies\uninstall.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pcre2", "pcre2", "{2356EA4F-1B7B-439C-803F-6F30F7A86FE3}"
+	ProjectSection(SolutionItems) = preProject
+		pcre2\pcre2-32.lib = pcre2\pcre2-32.lib
+		pcre2\pcre2-32d.lib = pcre2\pcre2-32d.lib
+		pcre2\pcre2-64.lib = pcre2\pcre2-64.lib
+		pcre2\pcre2-64d.lib = pcre2\pcre2-64d.lib
+		pcre2\pcre2.h = pcre2\pcre2.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK_Desktop_2017", "DirectXTK\DirectXTK_Desktop_2017.vcxproj", "{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+		Zip Release|Win32 = Zip Release|Win32
+		Zip Release|x64 = Zip Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Debug|Win32.ActiveCfg = Debug|Win32
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Debug|Win32.Build.0 = Debug|Win32
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Debug|x64.ActiveCfg = Debug|x64
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Debug|x64.Build.0 = Debug|x64
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Release|Win32.ActiveCfg = Release|Win32
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Release|Win32.Build.0 = Release|Win32
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Release|x64.ActiveCfg = Release|x64
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Release|x64.Build.0 = Release|x64
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Zip Release|Win32.ActiveCfg = Zip Release|Win32
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Zip Release|Win32.Build.0 = Zip Release|Win32
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Zip Release|x64.ActiveCfg = Zip Release|x64
+		{92A679C7-A67F-4B16-B055-7A2F4C23DD80}.Zip Release|x64.Build.0 = Zip Release|x64
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Debug|Win32.ActiveCfg = Debug|Win32
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Debug|Win32.Build.0 = Debug|Win32
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Debug|x64.ActiveCfg = Debug|x64
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Debug|x64.Build.0 = Debug|x64
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Release|Win32.ActiveCfg = Release|Win32
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Release|Win32.Build.0 = Release|Win32
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Release|x64.ActiveCfg = Release|x64
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Release|x64.Build.0 = Release|x64
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Zip Release|Win32.ActiveCfg = Zip Release|Win32
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Zip Release|Win32.Build.0 = Zip Release|Win32
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Zip Release|x64.ActiveCfg = Zip Release|x64
+		{374CBD29-E904-48E5-BF6F-A464B1EDCA86}.Zip Release|x64.Build.0 = Zip Release|x64
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Debug|x64.ActiveCfg = Debug|x64
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Debug|x64.Build.0 = Debug|x64
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Release|Win32.ActiveCfg = Release|Win32
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Release|x64.ActiveCfg = Release|x64
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Zip Release|Win32.ActiveCfg = Zip Release|Win32
+		{0783CE5A-6B8F-4E16-A26F-04F9F21AD078}.Zip Release|x64.ActiveCfg = Zip Release|x64
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Debug|Win32.Build.0 = Debug|Win32
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Debug|x64.ActiveCfg = Debug|x64
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Debug|x64.Build.0 = Debug|x64
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Release|Win32.ActiveCfg = Release|Win32
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Release|Win32.Build.0 = Release|Win32
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Release|x64.ActiveCfg = Release|x64
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Release|x64.Build.0 = Release|x64
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Zip Release|Win32.ActiveCfg = Zip Release|Win32
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Zip Release|Win32.Build.0 = Zip Release|Win32
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Zip Release|x64.ActiveCfg = Zip Release|x64
+		{258D0AD2-B762-41E3-A0C1-CF831D859DA4}.Zip Release|x64.Build.0 = Zip Release|x64
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}.Debug|Win32.ActiveCfg = Debug|Win32
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}.Debug|x64.ActiveCfg = Debug|x64
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}.Release|Win32.ActiveCfg = Release|Win32
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}.Release|x64.ActiveCfg = Release|x64
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}.Zip Release|Win32.ActiveCfg = Release|Win32
+		{59A9B0C6-8302-48A9-96E0-126FB32FB9ED}.Zip Release|x64.ActiveCfg = Release|x64
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Debug|Win32.Build.0 = Debug|Win32
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Debug|x64.ActiveCfg = Debug|x64
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Debug|x64.Build.0 = Debug|x64
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|Win32.ActiveCfg = Release|Win32
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|Win32.Build.0 = Release|Win32
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|x64.ActiveCfg = Release|x64
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Release|x64.Build.0 = Release|x64
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Zip Release|Win32.ActiveCfg = Release|Win32
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Zip Release|Win32.Build.0 = Release|Win32
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Zip Release|x64.ActiveCfg = Release|x64
+		{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}.Zip Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0893CB33-AB1E-4391-A284-B7292160549C} = {83DCC342-4199-4E03-B720-80E5EDF18500}
+		{09915712-7D63-41F9-8110-D5667F1F9FCF} = {1693604A-42AF-4848-B892-D1540FB17FDE}
+		{83DCC342-4199-4E03-B720-80E5EDF18500} = {1693604A-42AF-4848-B892-D1540FB17FDE}
+		{2356EA4F-1B7B-439C-803F-6F30F7A86FE3} = {83DCC342-4199-4E03-B720-80E5EDF18500}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A93030B7-FA63-4CBB-87C6-2E430AF6A6BA}
+	EndGlobalSection
+EndGlobal

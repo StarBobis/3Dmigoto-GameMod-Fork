@@ -1,0 +1,65 @@
+// ---- Created with 3Dmigoto v1.3.14 on Sat Feb 23 16:39:40 2019
+struct t5_t {
+  float val[16];
+};
+StructuredBuffer<t5_t> t5 : register(t5);
+
+struct t4_t {
+  float val[6];
+};
+StructuredBuffer<t4_t> t4 : register(t4);
+
+cbuffer cb1 : register(b1)
+{
+  float4 cb1[25];
+}
+
+
+
+
+// 3Dmigoto declarations
+#define cmp -
+
+
+void main(
+  float4 v0 : POSITION0,
+  float2 v1 : TEXCOORD0,
+  out float4 o0 : SV_POSITION0,
+  out float2 o1 : TEXCOORD0)
+{
+  float4 r0,r1,r2,r3,r4;
+  uint4 bitmask, uiDest;
+  float4 fDest;
+
+  r0.x = t4[0].val[12/4];
+  r1.x = t5[r0.x].val[0/4];
+  r1.y = t5[r0.x].val[0/4+1];
+  r1.z = t5[r0.x].val[0/4+2];
+  r1.w = t5[r0.x].val[0/4+3];
+  r2.x = r1.w;
+  r3.x = t5[r0.x].val[16/4];
+  r3.y = t5[r0.x].val[16/4+1];
+  r3.z = t5[r0.x].val[16/4+2];
+  r3.w = t5[r0.x].val[16/4+3];
+  r0.x = t5[r0.x].val[32/4];
+  r0.y = t5[r0.x].val[32/4+1];
+  r0.z = t5[r0.x].val[32/4+2];
+  r0.w = t5[r0.x].val[32/4+3];
+  r2.y = r3.w;
+  r2.z = r0.w;
+  r2.xyz = -cb1[24].xyz + r2.xyz;
+  r3.w = r2.y;
+  r4.xyz = v0.xyz;
+  r4.w = 1;
+  r2.y = dot(r4.xyzw, r3.xyzw);
+  r3.xyzw = cb1[9].xyzw * r2.yyyy;
+  r1.w = r2.x;
+  r0.w = r2.z;
+  r0.x = dot(r4.xyzw, r0.xyzw);
+  r0.y = dot(r4.xyzw, r1.xyzw);
+  r1.xyzw = r0.yyyy * cb1[8].xyzw + r3.xyzw;
+  r0.xyzw = r0.xxxx * cb1[10].xyzw + r1.xyzw;
+  o0.xyzw = cb1[11].xyzw + r0.xyzw;
+  o1.xy = v1.xy;
+  return;
+}

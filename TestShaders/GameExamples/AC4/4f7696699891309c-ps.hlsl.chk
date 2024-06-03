@@ -1,0 +1,29 @@
+// ---- Created with 3Dmigoto v1.3.14 on Sat Feb 23 16:39:15 2019
+
+Texture2DMS<float,2> g_DepthBuffer : register(t0);
+
+
+// 3Dmigoto declarations
+#define cmp -
+
+
+void main(
+  float4 v0 : SV_Position0,
+  float2 v1 : TEXCOORD0,
+  out float o0 : SV_Target0)
+{
+  float4 r0,r1;
+  uint4 bitmask, uiDest;
+  float4 fDest;
+
+  g_DepthBuffer.GetDimensions(uiDest.x, uiDest.y, uiDest.z);
+  r0.xyzw = uiDest.xyzw;
+  r0.xy = (uint2)r0.xy;
+  r0.xy = v1.xy * r0.xy;
+  r0.xy = (int2)r0.xy;
+  r0.zw = float2(0,0);
+  r1.x = g_DepthBuffer.Load(r0.xy, 0).x;
+  r0.x = g_DepthBuffer.Load(r0.xy, 1).x;
+  o0.x = min(r1.x, r0.x);
+  return;
+}
