@@ -1760,10 +1760,7 @@ GIMIStoreCommand::GIMIStoreCommand(wstring variable_name_in, wstring resource_na
 //这里我们执行Map来从GPU读取数据，用完之后UnMap来关闭读取
 void GIMIStoreCommand::run(CommandListState* state) {
 	//LogOverlayW(LOG_WARNING, L"run store success!\n");
-
-	//TODO store command currently not working perfect, will fix it later
-	//under WuWa testing
-
+	
 	//首先我们获取所有的ConstantsBuffer
 	ID3D11Buffer* buffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
 
@@ -1773,6 +1770,9 @@ void GIMIStoreCommand::run(CommandListState* state) {
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (shaderType.c_str()));
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (slotStr.c_str()));
 
+	//这里各种GetConstantBuffers的参数如下
+	//第一个参数是具体从哪个槽位获取
+	//第二个参数是获取几个buffer，我们这里获取所有的buffer
 	//这里千万注意！必须使用UINT，如果使用int类型则编译不会出错但是在下面与UINT进行比较时百分百造成程序崩溃
 	UINT slotNumber = std::stoi(slotStr);
 	if (shaderType == L"p") {
@@ -1786,8 +1786,7 @@ void GIMIStoreCommand::run(CommandListState* state) {
 		state->mOrigContext1->VSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
 	}
 	else {
-		//LogOverlayW(LOG_WARNING, L"default use cs !\n");
-		state->mOrigContext1->CSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+		state->mOrigContext1->PSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
 	}
 
 	UINT i;
@@ -1797,7 +1796,6 @@ void GIMIStoreCommand::run(CommandListState* state) {
 
 		//here we use ps-cb0,so i will always be 0,or it won't be right,so we break
 		//here i is 0 in ps-cb0 ,it's the slot number.
-
 		if (i == slotNumber) {
 			D3D11_RESOURCE_DIMENSION dim;
 			buffers[i]->GetType(&dim); //called resource
@@ -1856,6 +1854,7 @@ void GIMIStoreCommand::run(CommandListState* state) {
 		LogOverlay(LOG_WARNING, "[Store]Failed to run [Store] command." );
 	}
 	else {
+		
 		wstring tips = L"[Store] read value: " + std::to_wstring(this->healthVal);
 		LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
 	}
