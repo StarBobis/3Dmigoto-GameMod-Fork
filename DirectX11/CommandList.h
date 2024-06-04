@@ -1276,7 +1276,7 @@ public:
 	int resource_index;
 	float healthVal = 0;
 	
-	GIMIStoreCommand(wstring resource_name_in, wstring variable_name_in, wstring resource_index_in);
+	GIMIStoreCommand(wstring variable_name_in, wstring resource_name_in, wstring resource_index_in);
 
 	void run(CommandListState*) override;
 };
