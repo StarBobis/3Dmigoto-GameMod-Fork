@@ -1782,6 +1782,9 @@ void GIMIStoreCommand::run(CommandListState* state) {
 	else if (shaderType == L"c") {
 		state->mOrigContext1->CSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
 	}
+	else if (shaderType == L"v") {
+		state->mOrigContext1->VSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+	}
 	else {
 		//LogOverlayW(LOG_WARNING, L"default use cs !\n");
 		state->mOrigContext1->CSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
