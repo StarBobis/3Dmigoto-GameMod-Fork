@@ -5,6 +5,9 @@ To keep update with original 3Dmigoto project,these fork version of 3Dmigoto-Arm
 the fork date in project name ,so you can know what latest features it include and what not.
 
 This fork is mainly to solve the game mod problem.
+
+Notice: This project is a toy for pure pleasure, will no released version of d3d11.dll published, you need to compile it yourself.
+
 # Problems
 - Notice: If you open Version in resource view,the entire project will break and can't compile anymore,version can
 only be edited in versions.h. I will try fix this later but before that don't open it in resource view.

@@ -69,6 +69,7 @@
     <ClCompile Include="ShaderRegex.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\README.md" />
     <None Include="d3d11Wrapper.def" />
   </ItemGroup>
   <ItemGroup>

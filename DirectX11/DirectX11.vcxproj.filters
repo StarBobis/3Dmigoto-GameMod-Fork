@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="d3d11Wrapper.def" />
+    <None Include="..\README.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3D11Wrapper.h" />
