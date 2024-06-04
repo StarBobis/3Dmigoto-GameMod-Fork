@@ -1759,6 +1759,8 @@ GIMIStoreCommand::GIMIStoreCommand(wstring variable_name_in, wstring resource_na
 //here is where we really execute map resource to read it's content and unmap it later
 //这里我们执行Map来从GPU读取数据，用完之后UnMap来关闭读取
 void GIMIStoreCommand::run(CommandListState* state) {
+	//每次都设为-1，只有成功读取到才会设置对应的值，否则一直为-666
+	this->healthVal = -666;
 	//LogOverlayW(LOG_WARNING, L"run store success!\n");
 	
 	//首先我们获取所有的ConstantsBuffer
@@ -1850,7 +1852,7 @@ void GIMIStoreCommand::run(CommandListState* state) {
 	//LogOverlayW(LOG_INFO, L"parse Store value success!\n");
 
 	//these only for debug,don't uncomment it in release version
-	if (this->healthVal == -1) {
+	if (this->healthVal == -666) {
 		LogOverlay(LOG_WARNING, "[Store]Failed to run [Store] command." );
 	}
 	else {
@@ -1864,10 +1866,12 @@ void GIMIStoreCommand::run(CommandListState* state) {
 
 	//更新CommandList中指向的变量的值
 	//var->fval = expression.evaluate(state);
-	var->fval = this->healthVal;
+	if (this->healthVal != -666) {
+		var->fval = this->healthVal;
 
-	if (var->flags & VariableFlags::PERSIST)
-		G->user_config_dirty |= (var->fval != this->healthVal);
+		if (var->flags & VariableFlags::PERSIST)
+			G->user_config_dirty |= (var->fval != this->healthVal);
+	}
 }
 
 
@@ -5795,7 +5799,7 @@ bool ParseCommandListGIMIStore(const wchar_t* section,
 			return false;
 		}
 
-		LogOverlayW(LOG_WARNING, L"parse Store command success!\n");
+		//LogOverlayW(LOG_WARNING, L"parse Store command success!\n");
 		//创建一个新的GIMIStoreCommand
 		command = new GIMIStoreCommand(variableName, resourceName, resourceIndex);
 		command->var = var;
