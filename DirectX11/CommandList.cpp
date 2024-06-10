@@ -1857,8 +1857,8 @@ void GIMIStoreCommand::run(CommandListState* state) {
 	}
 	else {
 		
-		wstring tips = L"[Store] read value: " + std::to_wstring(this->healthVal);
-		LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
+		//wstring tips = L"[Store] read value: " + std::to_wstring(this->healthVal);
+		//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
 	}
 	//wstring healthbar = std::to_wstring(this->healthVal);
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(healthbar.c_str()));
@@ -1874,6 +1874,87 @@ void GIMIStoreCommand::run(CommandListState* state) {
 	}
 }
 
+
+CSReplaceCommand::CSReplaceCommand(wstring constant_buffer_slot_name, wstring resource_index, wstring original_value, wstring replace_value) {
+	this->constant_buffer_slot_name = constant_buffer_slot_name;
+	this->resource_index = std::stoi(resource_index);
+	this->original_value = std::stof(original_value);
+	this->replace_value = std::stof(replace_value);
+}
+
+
+//这里解析具体的槽位并进行执行
+void CSReplaceCommand::run(CommandListState* state) {
+	//首先我们获取所有的ConstantsBuffer
+	ID3D11Buffer* buffers[D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT];
+
+	//这里需要解析具体是使用哪个ConstantBuffer，常用的有PS,VS,CS等等，从而获取到对应的ID3D11Buffer到buffers变量
+	std::wstring shaderType = this->constant_buffer_slot_name.substr(0, 1);
+	std::wstring slotStr = this->constant_buffer_slot_name.substr(this->constant_buffer_slot_name.length() - 1);
+	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (shaderType.c_str()));
+	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (slotStr.c_str()));
+
+	//这里各种GetConstantBuffers的参数如下
+	//第一个参数是具体从哪个槽位获取
+	//第二个参数是获取几个buffer，我们这里获取所有的buffer
+	//这里千万注意！必须使用UINT，如果使用int类型则编译不会出错但是在下面与UINT进行比较时百分百造成程序崩溃
+	UINT slotNumber = std::stoi(slotStr);
+	if (shaderType == L"p") {
+		//然后从PS里获取PSGetConstantBuffers
+		state->mOrigContext1->PSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+	}
+	else if (shaderType == L"c") {
+		state->mOrigContext1->CSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+	}
+	else if (shaderType == L"v") {
+		state->mOrigContext1->VSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+	}
+	else {
+		state->mOrigContext1->PSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+	}
+
+	UINT i;
+	for (i = 0; i < D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT; i++) {
+		if (!buffers[i])
+			continue;
+
+		//这里我们判断是否为槽位的数值，比如cs-cb0就是0，cs-cb5就是5
+		if (i == slotNumber) {
+			D3D11_RESOURCE_DIMENSION dim;
+			buffers[i]->GetType(&dim); //called resource
+			if (dim == D3D11_RESOURCE_DIMENSION_BUFFER) {
+
+				//直接map原本的槽位进行资源替换
+				HRESULT hr;
+				D3D11_MAPPED_SUBRESOURCE map;
+				hr = state->mOrigContext1->Map(buffers[i], 0, D3D11_MAP_READ_WRITE, 0, &map);
+				if (FAILED(hr)) {
+					LogOverlayW(LOG_WARNING, L"[CSReplace] Failed to Map original slot D3D11 Resource");
+					continue;
+				}
+
+				float* buf = (float*)map.pData;
+
+				float original = buf[this->resource_index];
+				//如果相等的话输出看一下
+				if (original == this->original_value) {
+					wstring tips = L"OriginalValue: " + std::to_wstring(original);
+					LogOverlayW(LOG_INFO, const_cast<wchar_t*> (tips.c_str()));
+
+					//然后替换为我们的数值
+					buf[this->resource_index] = this->replace_value;
+				}
+
+				state->mOrigContext1->Unmap(buffers[i], 0);
+			}
+		}
+
+		buffers[i]->Release();
+	}
+
+	//wstring healthbar = std::to_wstring(this->healthVal);
+	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(healthbar.c_str()));
+}
 
 CustomShader::CustomShader() :
 	vs_override(false), hs_override(false), ds_override(false),
@@ -5747,6 +5828,60 @@ void removeWhitespace(std::wstring& str) {
 	}
 }
 
+
+//Nico [CSReplace] 
+bool ParseCommandListArmorCSReplace(const wchar_t* section,
+	const wchar_t* key, wstring* val, const wstring* raw_line,
+	CommandList* command_list, CommandList* pre_command_list, CommandList* post_command_list,
+	const wstring* ini_namespace) {
+
+	//detect csreplace
+	if (!wcscmp(key, L"csreplace")) {
+		//输出到屏幕看一下，这个输出的内容很多不要轻易打开
+		wstring valValue = *val;
+		wstring showInfo = L"Show [csreplace] *val:  " + valValue + L" \n";
+		//LogOverlayW(LOG_INFO, const_cast<wchar_t*>(showInfo.c_str()));
+
+
+		//用逗号分割开
+		std::vector<std::wstring> tokens;
+		std::wstringstream wss(valValue);
+		std::wstring token;
+		while (std::getline(wss, token, L',')) {
+			tokens.push_back(token);
+		}
+
+		// 分割后大小必须为4, 例如: csreplace = cs-cb0, 3, 666, 888
+		if (tokens.size() != 4) {
+			LogOverlayW(LOG_WARNING, L"Can't parse Store command, not exactly 4 member :\n");
+			LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(showInfo.c_str()));
+			return false;
+		}
+
+		wstring constant_buffer_slot_name = tokens[0];   //cs-cb0
+		removeWhitespace(constant_buffer_slot_name);
+		wstring resource_index = tokens[1];	//3
+		removeWhitespace(resource_index);
+		wstring original_value = tokens[2];	//666
+		removeWhitespace(original_value);
+		wstring replace_value = tokens[3];	//888
+		removeWhitespace(replace_value);
+
+		//TODO 这里换成新的CommandList
+		CSReplaceCommand* command = NULL;
+		command = new CSReplaceCommand(constant_buffer_slot_name, resource_index, original_value, replace_value);
+		command->ini_line = L"[" + wstring(section) + L"] $NicoMico = 666"; //这一行用不上，但是得有，随便填点什么
+		post_command_list->commands.push_back(std::shared_ptr<CommandListCommand>(command)); //添加到CommandList中等待执行
+
+		//comment this in release
+		LogOverlayW(LOG_WARNING, L"parse cs_replace command success!\n");
+		return true;
+	}
+
+	return false;
+}
+
+
 //[Store]
 bool ParseCommandListGIMIStore(const wchar_t* section,
 	const wchar_t* key, wstring* val, const wstring* raw_line,
@@ -5760,7 +5895,7 @@ bool ParseCommandListGIMIStore(const wchar_t* section,
 		//输出到屏幕看一下，这个输出的内容很多不要轻易打开
 		wstring valValue = *val;
 		wstring showInfo = L"Let's see what is inside *val:  " + valValue + L" \n";
-		LogOverlayW(LOG_INFO, const_cast<wchar_t*>(showInfo.c_str()));
+		//LogOverlayW(LOG_INFO, const_cast<wchar_t*>(showInfo.c_str()));
 
 
 		//用逗号分割开

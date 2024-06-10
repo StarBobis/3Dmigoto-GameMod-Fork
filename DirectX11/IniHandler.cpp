@@ -1860,7 +1860,15 @@ static bool ParseCommandListLine(const wchar_t *ini_section,
 	if (ParseCommandListGeneralCommands(ini_section, lhs, rhs, explicit_command_list, pre_command_list, post_command_list, ini_namespace))
 		return true;
 
-	if (ParseCommandListGIMIStore(ini_section,lhs,rhs,raw_line, explicit_command_list, pre_command_list, post_command_list,ini_namespace)) {
+	//GIMI Store
+	if (ParseCommandListGIMIStore(ini_section,lhs,rhs,raw_line, explicit_command_list, pre_command_list, post_command_list,ini_namespace)) 
+	{
+		return true;
+	}
+
+	//CSReplace
+	if (ParseCommandListArmorCSReplace(ini_section, lhs, rhs, raw_line, explicit_command_list, pre_command_list, post_command_list, ini_namespace))
+	{
 		return true;
 	}
 

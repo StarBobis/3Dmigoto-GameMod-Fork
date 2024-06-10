@@ -75,6 +75,8 @@ public:
 	~CommandListState();
 };
 
+
+//如果要新建一个CommandList那就需要继承这个类，或者继承这个类的子类来完成分类。
 class CommandListCommand {
 public:
 	wstring ini_line;
@@ -1282,6 +1284,20 @@ public:
 };
 
 
+//Nico: [CSReplace]
+class CSReplaceCommand : public CommandListCommand {
+public:
+	wstring constant_buffer_slot_name;
+	int resource_index;
+	float original_value;
+	float replace_value;
+
+	CSReplaceCommand(wstring constant_buffer_slot_name, wstring resource_index, wstring original_value, wstring replace_value);
+
+	void run(CommandListState*) override;
+};
+
+
 void RunCommandList(HackerDevice *mHackerDevice,
 		HackerContext *mHackerContext,
 		CommandList *command_list, DrawCallInfo *call_info,
@@ -1321,11 +1337,18 @@ bool ParseCommandListFlowControl(const wchar_t *section, const wstring *line,
 		CommandList *pre_command_list, CommandList *post_command_list,
 		const wstring *ini_namespace);
 
-//Nico:
+//Nico: GIMI's close source Store Feature
 bool ParseCommandListGIMIStore(const wchar_t* section,
 	const wchar_t* key, wstring* val, const wstring* raw_line,
 	CommandList* command_list, CommandList* pre_command_list, CommandList* post_command_list,
 	const wstring* ini_namespace);
+
+//Nico: Armor's csreplace feature
+bool ParseCommandListArmorCSReplace(const wchar_t* section,
+	const wchar_t* key, wstring* val, const wstring* raw_line,
+	CommandList* command_list, CommandList* pre_command_list, CommandList* post_command_list,
+	const wstring* ini_namespace);
+
 
 std::shared_ptr<RunLinkedCommandList>
 		LinkCommandLists(CommandList *dst, CommandList *link, const wstring *ini_line);
