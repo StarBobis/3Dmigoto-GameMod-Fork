@@ -1925,6 +1925,8 @@ void CSReplaceCommand::run(CommandListState* state) {
 			if (dim == D3D11_RESOURCE_DIMENSION_BUFFER) {
 
 				//直接map原本的槽位进行资源替换
+				//TODO 如果直接Map原本的槽位，百分百会map失败，这里还需要参考槽位替换技术里是怎么实现整个槽位替换的
+				//结合store里的读取，就能实现最终的资源替换了。
 				HRESULT hr;
 				D3D11_MAPPED_SUBRESOURCE map;
 				hr = state->mOrigContext1->Map(buffers[i], 0, D3D11_MAP_READ_WRITE, 0, &map);
@@ -1935,9 +1937,10 @@ void CSReplaceCommand::run(CommandListState* state) {
 
 				float* buf = (float*)map.pData;
 
-				float original = buf[this->resource_index];
+				//这里要用UINT才行，因为float类型无法正确解码
+				UINT original = buf[this->resource_index];
 				//如果相等的话输出看一下
-				if (original == this->original_value) {
+				if (original == (UINT)this->original_value) {
 					wstring tips = L"OriginalValue: " + std::to_wstring(original);
 					LogOverlayW(LOG_INFO, const_cast<wchar_t*> (tips.c_str()));
 
@@ -1949,6 +1952,7 @@ void CSReplaceCommand::run(CommandListState* state) {
 			}
 		}
 
+		//试试如果不Release呢
 		buffers[i]->Release();
 	}
 
@@ -8092,6 +8096,7 @@ static ResourceCopyTargetType EquivTarget(ResourceCopyTargetType type)
 	return type;
 }
 
+//TODO 参考这个函数来实现我们CSReplace的资源替换
 void ResourceCopyOperation::run(CommandListState *state)
 {
 	HackerDevice *mHackerDevice = state->mHackerDevice;
