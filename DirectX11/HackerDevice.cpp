@@ -1703,7 +1703,16 @@ STDMETHODIMP HackerDevice::CreateUnorderedAccessView(THIS_
 		pBuffer->GetDesc(&bufferDesc);
 		int vertexNumber = modifiedDesc.Buffer.NumElements;
 
-		if (bufferDesc.ByteWidth % 40 == 0) {
+		//40指的是计算后的Position也就是u0的宽度为40
+		//这里为了测试鸣潮，我们添加长度16和长度12，因为鸣潮的u0长度为16，u1长度为12(POSITION posed)
+
+		//这里鸣潮的测试通过了，由于UAV的创建通常是由CS计算次数动态指定的，所以我们这里就可以
+		//通过UAV来绕过顶点数量限制，如果是之前的普通的VS的UE的话，可以通过重复提交资源来绕过顶点数量限制。
+
+		//注意这里的NumElements,主要是决定能写出多少个数据到UAV里，在我们改变了CS的计算次数后，UAV的大小会自动改变
+		//但是如果不更改这个NumElements，则超出原本NumElements数量的部分会被强制写为0x00，导致数据丢失产生顶点数量限制问题。
+		if (bufferDesc.ByteWidth % 40 == 0 || bufferDesc.ByteWidth % 12 == 0 || bufferDesc.ByteWidth % 16 == 0) {
+			//这里的4指的是R32_TYPELESS的长度，UAV的指定一般就是规定装某个具体的类型比如float，所以长度为4
 			vertexNumber = bufferDesc.ByteWidth / 4;
 			//wstring showInfo = L"VertexNumber: " + std::to_wstring(vertexNumber);
 			//LogOverlayW(LOG_WARNING, const_cast<wchar_t*>( showInfo.c_str()));
