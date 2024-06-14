@@ -1893,6 +1893,8 @@ void CSReplaceCommand::run(CommandListState* state) {
 	std::wstring slotStr = this->constant_buffer_slot_name.substr(this->constant_buffer_slot_name.length() - 1);
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (shaderType.c_str()));
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (slotStr.c_str()));
+	//已经测了确实是可以执行到这里的
+
 
 	//这里各种GetConstantBuffers的参数如下
 	//第一个参数是具体从哪个槽位获取
@@ -1900,7 +1902,6 @@ void CSReplaceCommand::run(CommandListState* state) {
 	//这里千万注意！必须使用UINT，如果使用int类型则编译不会出错但是在下面与UINT进行比较时百分百造成程序崩溃
 	UINT slotNumber = std::stoi(slotStr);
 	if (shaderType == L"p") {
-		//然后从PS里获取PSGetConstantBuffers
 		state->mOrigContext1->PSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
 	}
 	else if (shaderType == L"c") {
@@ -1913,8 +1914,8 @@ void CSReplaceCommand::run(CommandListState* state) {
 		state->mOrigContext1->PSGetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
 	}
 
-	UINT i;
-	for (i = 0; i < D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT; i++) {
+	bool findMatchNumber = false;
+	for (UINT i = 0; i < D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT; i++) {
 		if (!buffers[i])
 			continue;
 
@@ -1923,41 +1924,66 @@ void CSReplaceCommand::run(CommandListState* state) {
 			D3D11_RESOURCE_DIMENSION dim;
 			buffers[i]->GetType(&dim); //called resource
 			if (dim == D3D11_RESOURCE_DIMENSION_BUFFER) {
+				D3D11_BUFFER_DESC desc, orig_desc;
+				ID3D11Buffer* staging = NULL;
 
 				//直接map原本的槽位进行资源替换
 				//TODO 如果直接Map原本的槽位，百分百会map失败，这里还需要参考槽位替换技术里是怎么实现整个槽位替换的
 				//结合store里的读取，就能实现最终的资源替换了。
 				HRESULT hr;
-				D3D11_MAPPED_SUBRESOURCE map;
-				hr = state->mOrigContext1->Map(buffers[i], 0, D3D11_MAP_READ_WRITE, 0, &map);
+
+
+				buffers[i]->GetDesc(&desc);
+				memcpy(&orig_desc, &desc, sizeof(D3D11_BUFFER_DESC));
+
+				desc.Usage = D3D11_USAGE_STAGING;
+				//desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+				desc.BindFlags = 0;
+				//desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+				desc.MiscFlags = 0;
+				desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+
+				LockResourceCreationMode();
+				hr = state->mOrigDevice1->CreateBuffer(&desc, NULL, &staging);
+				UnlockResourceCreationMode();
 				if (FAILED(hr)) {
-					LogOverlayW(LOG_WARNING, L"[CSReplace] Failed to Map original slot D3D11 Resource");
+					LogOverlayW(LOG_WARNING,L"[CSReplace]Failed to CreateBuffer staging");
 					continue;
 				}
 
-				float* buf = (float*)map.pData;
+				state->mOrigContext1->CopyResource(staging, buffers[i]);
 
-				//这里要用UINT才行，因为float类型无法正确解码
+				D3D11_MAPPED_SUBRESOURCE map;
+				hr = state->mOrigContext1->Map(staging, 0, D3D11_MAP_READ_WRITE, 0, &map);
+				if (FAILED(hr)) {
+					LogOverlayW(LOG_WARNING, L"[CSReplace] Failed to Map staging slot D3D11 Resource");
+					continue;
+				}
+
+				UINT* buf = (UINT*)map.pData;
 				UINT original = buf[this->resource_index];
-				//如果相等的话输出看一下
 				if (original == (UINT)this->original_value) {
 					wstring tips = L"OriginalValue: " + std::to_wstring(original);
-					LogOverlayW(LOG_INFO, const_cast<wchar_t*> (tips.c_str()));
+					LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
 
 					//然后替换为我们的数值
 					buf[this->resource_index] = this->replace_value;
+
+					findMatchNumber = true;
+
 				}
 
-				state->mOrigContext1->Unmap(buffers[i], 0);
+				state->mOrigContext1->Unmap(staging, 0);
+				state->mOrigContext1->CopyResource(buffers[i], staging);
 			}
 		}
 
-		//试试如果不Release呢
-		buffers[i]->Release();
 	}
 
-	//wstring healthbar = std::to_wstring(this->healthVal);
-	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*>(healthbar.c_str()));
+	if (findMatchNumber) {
+		state->mOrigContext1->CSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+	}
+
 }
 
 CustomShader::CustomShader() :
