@@ -1893,8 +1893,6 @@ void CSReplaceCommand::run(CommandListState* state) {
 	std::wstring slotStr = this->constant_buffer_slot_name.substr(this->constant_buffer_slot_name.length() - 1);
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (shaderType.c_str()));
 	//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (slotStr.c_str()));
-	//已经测了确实是可以执行到这里的
-
 
 	//这里各种GetConstantBuffers的参数如下
 	//第一个参数是具体从哪个槽位获取
@@ -1926,10 +1924,6 @@ void CSReplaceCommand::run(CommandListState* state) {
 			if (dim == D3D11_RESOURCE_DIMENSION_BUFFER) {
 				D3D11_BUFFER_DESC desc, orig_desc;
 				ID3D11Buffer* staging = NULL;
-
-				//直接map原本的槽位进行资源替换
-				//TODO 如果直接Map原本的槽位，百分百会map失败，这里还需要参考槽位替换技术里是怎么实现整个槽位替换的
-				//结合store里的读取，就能实现最终的资源替换了。
 				HRESULT hr;
 
 
@@ -1963,14 +1957,13 @@ void CSReplaceCommand::run(CommandListState* state) {
 				UINT* buf = (UINT*)map.pData;
 				UINT original = buf[this->resource_index];
 				if (original == (UINT)this->original_value) {
-					wstring tips = L"OriginalValue: " + std::to_wstring(original);
-					LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
+					//wstring tips = L"OriginalValue: " + std::to_wstring(original);
+					//LogOverlayW(LOG_WARNING, const_cast<wchar_t*> (tips.c_str()));
 
 					//然后替换为我们的数值
 					buf[this->resource_index] = this->replace_value;
 
 					findMatchNumber = true;
-
 				}
 
 				state->mOrigContext1->Unmap(staging, 0);
@@ -1981,7 +1974,18 @@ void CSReplaceCommand::run(CommandListState* state) {
 	}
 
 	if (findMatchNumber) {
-		state->mOrigContext1->CSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+		if (shaderType == L"p") {
+			state->mOrigContext1->PSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+		}
+		else if (shaderType == L"c") {
+			state->mOrigContext1->CSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+		}
+		else if (shaderType == L"v") {
+			state->mOrigContext1->VSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+		}
+		else {
+			state->mOrigContext1->PSSetConstantBuffers(0, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT, buffers);
+		}
 	}
 
 }
