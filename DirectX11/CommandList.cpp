@@ -1968,9 +1968,12 @@ void CSReplaceCommand::run(CommandListState* state) {
 
 				state->mOrigContext1->Unmap(staging, 0);
 				state->mOrigContext1->CopyResource(buffers[i], staging);
+
+				staging->Release();
 			}
 		}
-
+		
+		buffers[i]->Release();
 	}
 
 	if (findMatchNumber) {
